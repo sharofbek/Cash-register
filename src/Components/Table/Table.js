@@ -76,13 +76,16 @@ const TableJs = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        let edit = {name: editName}
-        axios.put("http://localhost:5000/kassa" , edit)
-            .then(res => {
-                getKassa()
-            })
-        setEditModal(false)
-        setEditName("")
+        kassa.map(item => {
+            let edit = {name: editName}
+            axios.put(`http://localhost:5000/kassa/${item.id}` , edit)
+                .then(res => {
+                    getKassa()
+                })
+            setEditModal(false)
+            setEditName("")
+        })
+
 
 
     }
