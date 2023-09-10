@@ -9,10 +9,9 @@ import {DeleteOutlined ,EditOutlined} from "@ant-design/icons";
 
 const TableJs = () => {
 
-
     const [kassa , setKassa] = useState([])
 
-    const [name ,setName] = useState('')
+    const [value ,setValue] = useState('')
     const [editName,setEditName] = useState('')
 
 
@@ -36,25 +35,30 @@ const TableJs = () => {
 
     const getKassa = () => {
         axios({
-            url:'http://localhost:5000/kassa',
+            url:'http://localhost:5000/users',
             method:'get'
         }).then(res => setKassa(res.data))
     }
 
-    const onFinish = () => {
-        let obj = { name: name }
-        axios.post("http://localhost:5000/kassa" , obj)
-            .then(res => {
-                getKassa()
-                showModal()
-            })
+    const onSubmit = () => {
+
+        if(value ===''){
+            alert("To'ldiring")
+        }
+        else{
+            axios.post("http://localhost:5000/users" , {name:value})
+                .then(res => {
+                    getKassa()
+                    setIsModalOpen(false)
+                    setValue("")
+                })
+        }
 
     }
 
-
     const DeleteKassa = (id) => {
         axios({
-            url:`http://localhost:5000/kassa/${id}`,
+            url:`http://localhost:5000/users/${id}`,
             method:'delete',
         }).then(res => {
             getKassa()
@@ -62,32 +66,20 @@ const TableJs = () => {
     }
 
     const editKassa = (id) => {
-        axios.get(`http://localhost:5000/kassa/${id}`)
+        axios.get(`http://localhost:5000/users/${id}`)
             .then(res => {
-                getKassa()
-                kassa.map(item => {
-                    let name = item.name
+                    let name = res.data.name
                     setEditName(name)
-                })
-                showModal2()
-
+                    showModal2()
             })
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        kassa.map(item => {
-            let edit = {name: editName}
-            axios.put(`http://localhost:5000/kassa/${item.id}` , edit)
-                .then(res => {
-                    getKassa()
-                })
-            setEditModal(false)
-            setEditName("")
-        })
-
-
-
+    const handleSubmit = (id) => {
+        axios.put(`http://localhost:5000/users/${id}` , {name:editName})
+            .then(res => {
+                getKassa()
+                setEditModal(false)
+            })
     }
 
 
@@ -95,24 +87,11 @@ const TableJs = () => {
     return (
         <div>
 
-            <Modal title="Modal" open={isModalOpen}  onCancel={handleCancel} footer={null}>
-                <Form name="basic" labelCol={{span: 8,}} wrapperCol={{span: 16,}} style={{maxWidth: 600,}} initialValues={{remember: true,}} onFinish={onFinish} autoComplete="off">
-                    <Form.Item label="Name" name="name" rules={[{required: true, message: "Iltimos nom kiriting!!!",},]}>
-                        <Input value={name} onChange={(e)=>setName(e.target.value)} />
-                    </Form.Item>
+            <Modal title="Modal" open={isModalOpen} onCancel={handleCancel} footer={null}>
+                <form name="basic"  autoComplete="off" className='text-end' >
+                        <input placeholder='Name' value={value} className='form-control my-3' type='text' onChange={(e)=>setValue(e.target.value)} />
 
-                    <Form.Item wrapperCol={{offset: 8, span: 16,}}>
-                        <Button  type="primary" htmlType="submit">
-                            Saqlash
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
-
-            <Modal title="Modal" open={editModal}  onCancel={handleCancel} footer={null}>
-                <form onSubmit={handleSubmit}>
-                    <input value={editName} onChange={(e) => setEditName(e.target.value)} type="text"/>
-                    <button className='btn btn-primary text-center'>Update</button>
+                        <Button onClick={e =>onSubmit(e.preventDefault())} type="primary" htmlType="submit">Saqlash</Button>
                 </form>
             </Modal>
 
@@ -124,13 +103,12 @@ const TableJs = () => {
                         </div>
                     </div>
 
-                    <table className="table table-hover table-striped">
+                    <table className="table table-hover table-striped table-responsive">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Nomi</th>
-                                <th>
-                                </th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,6 +124,12 @@ const TableJs = () => {
                                         <EditOutlined/>
                                     </Button>
                                 </td>
+                                <Modal title="Modal" open={editModal}  onCancel={handleCancel} footer={null}>
+                                    <form className='text-end' >
+                                        <input className='form-control my-3' value={editName} onChange={e => setEditName(e.target.value)} type="text"/>
+                                        <button onClick={() => handleSubmit(item.id)} type='button' className='btn btn-primary text-center'>Update</button>
+                                    </form>
+                                </Modal>
                             </tr>)
                         }
                         </tbody>

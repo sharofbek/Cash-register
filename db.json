@@ -1,12 +1,23 @@
 {
-  "kassa": [
+  "users": [
     {
-      "name": "Sharofbekasdasd",
-      "id": 1
+      "id": 1,
+      "name": "Kassa1",
+      "userName": "Kamoliddin",
+      "amount": 1000
     },
     {
-      "name": "asdasd",
-      "id": 2
+      "id": 2,
+      "name": "Kassa2",
+      "userName": "Sharofbek",
+      "amount": 2000
+    },
+    {
+      "userName": "Umid",
+      "amount": "3000",
+      "name": "Kassa3",
+      "id": 3
     }
-  ]
+  ],
+  "income": []
 }
